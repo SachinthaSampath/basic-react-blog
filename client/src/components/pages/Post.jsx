@@ -32,11 +32,10 @@ const Post = () => {
 };
 
 const loader = async ({ params, request: { signal } }) => {
-  const post = getPost(params.postId, { signal });
   const comments = getComments(params.postId, { signal });
+  const post = await getPost(params.postId, { signal });
   const user = getUser(post.userId, { signal });
-
-  return { comments: await comments, post: await post, user: await user };
+  return { comments: await comments, post, user: await user };
 };
 
 export const PostRoute = {

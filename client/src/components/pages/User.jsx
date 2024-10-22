@@ -62,7 +62,6 @@ const loader = async (options) => {
   const user = getUser(params.userId, { signal });
   const posts = getPosts({ signal, params: { userId: params.userId } });
   const todos = getTodos({ signal, params: { userId: params.userId } });
-
   return { user: await user, posts: await posts, todos: await todos };
 };
 
