@@ -1,6 +1,14 @@
 import { baseApi } from './base';
 
 export function getPosts(options) {
+  console.log('getPosts options', options);
+  // NOTE: { signal, params: { userId: params.userId } } => options
+
+  // NOTE: data formats
+  // loader options = request, params, context
+  // getPosts options = signal, params
+  // axios receives = signal, params
+
   return baseApi.get('/posts', options).then((res) => res.data);
 }
 

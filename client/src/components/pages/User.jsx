@@ -51,7 +51,14 @@ const User = () => {
   );
 };
 
-const loader = async ({ params, request: { signal } }) => {
+const loader = async (options) => {
+  console.log("loader options", options);
+  // NOTE: data formats
+  // loader options = request, params, context
+  // getPosts options = signal, params
+  // axios receives = signal, params
+
+  const { params, request: { signal } } = options;
   const user = getUser(params.userId, { signal });
   const posts = getPosts({ signal, params: { userId: params.userId } });
   const todos = getTodos({ signal, params: { userId: params.userId } });
