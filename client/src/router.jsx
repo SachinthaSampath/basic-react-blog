@@ -1,80 +1,34 @@
-import { createBrowserRouter, Navigate, useRouteError } from 'react-router-dom';
-import RootLayout from './components/layouts/RootLayout';
-import { PostRoute } from './components/pages/Post';
-import { PostListRoute } from './components/pages/PostList';
+import { createBrowserRouter, redirect } from 'react-router-dom';
 import { TodoListRoute } from './components/pages/TodoList';
 
-import { UserRoute } from './components/pages/User';
-import { UserListRoute } from './components/pages/UserList';
+import NewTodo from './components/pages/NewTodo';
 
 export const router = createBrowserRouter([
   {
-    path: '/',
-    element: <RootLayout />,
-    children: [
-      {
-        errorElement: <ErrorPage />,
-        children: [
-          {
-            index: true,
-            element: <Navigate to={'/posts'} />,
-          },
-          {
-            path: 'posts',
-            children: [
-              {
-                index: true,
-                ...PostListRoute,
-              },
-              {
-                path: ':postId',
-                ...PostRoute,
-              },
-            ],
-          },
-          {
-            path: 'users',
-            children: [
-              {
-                index: true,
-                ...UserListRoute,
-              },
-              {
-                path: ':userId',
-                ...UserRoute,
-              },
-            ],
-          },
-          {
-            path: 'todos',
-            children: [
-              {
-                index: true,
-                ...TodoListRoute,
-              },
-            ],
-          },
-          {
-            path: '*',
-            element: <ErrorPage />,
-          },
-        ],
-      },
-    ],
+    index: true,
+    ...TodoListRoute,
+  },
+  {
+    path: '/new',
+    element: <NewTodo />,
+    action: async ({ request }) => {
+      const formData = await request.formData();
+      const title = formData.get('title');
+
+      if (!title) {
+        return 'Title is required!';
+      }
+
+      const newTodo = await fetch(`http://localhost:3000/todos`, {
+        signal: request.signal,
+        method: 'POST',
+        body: JSON.stringify({ title, completed: false }),
+        headers: { 'Content-Type': 'application/json' },
+      }).then((res) => res.json());
+
+      console.log('new todo ', newTodo);
+
+      return redirect('/');
+    },
   },
 ]);
-
-function ErrorPage() {
-  const error = useRouteError();
-  return (
-    <>
-      <h1>Error - Something went wrong.</h1>
-      {import.meta.env.MODE !== 'production' && (
-        <>
-          <pre>{error.message}</pre>
-          <pre>{error.stack}</pre>
-        </>
-      )}
-    </>
-  );
-}
